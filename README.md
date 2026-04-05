@@ -116,9 +116,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-Environment=HOME=/root
-Environment=IS_SANDBOX=1
-ExecStart=/usr/bin/script -q -c "/root/.local/bin/claude --dangerously-skip-permissions --channels plugin:telegram@claude-plugins-official" /dev/null
+ExecStart=/usr/bin/script -q -c "claude --channels plugin:telegram@claude-plugins-official" /dev/null
 Restart=always
 RestartSec=5
 
