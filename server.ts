@@ -81,6 +81,8 @@ type PendingEntry = {
 type GroupPolicy = {
   requireMention: boolean
   allowFrom: string[]
+  /** Restrict to specific forum topics by message_thread_id. Empty/absent = all topics. */
+  allowTopics?: number[]
 }
 
 type Access = {
@@ -261,6 +263,14 @@ function gate(ctx: Context): GateResult {
     }
     if (requireMention && !isMentioned(ctx, access.mentionPatterns)) {
       return { action: 'drop' }
+    }
+    // Topic isolation: if allowTopics is set, only deliver messages from those topics
+    const allowTopics = policy.allowTopics
+    if (allowTopics && allowTopics.length > 0) {
+      const threadId = ctx.message?.message_thread_id
+      if (threadId == null || !allowTopics.includes(threadId)) {
+        return { action: 'drop' }
+      }
     }
     return { action: 'deliver', access }
   }
